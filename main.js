@@ -24,7 +24,13 @@ let getPushedKey = (keyboard) => {
   return KEY_NO_PUSHED;
 };
 
+let shootable = true;
 let shootBullet = (scene, direction, initPos) => {
+  if (!shootable) return;
+  shootable = false;
+  setTimeout(() => {
+    shootable = true;
+  }, 100);
   const BULLET_SPEED = 16;
   let bullet = CircleShape({
     radius: 8,
@@ -51,12 +57,22 @@ let shootBullet = (scene, direction, initPos) => {
     default: { assert("shootBullet????"); }
   }
   bullet.updatedCount = 0;
+  let UPDATE_LIMIT = (direction == KEY_UP || direction == KEY_DOWN) ? 30 : 45;
   bullet.update = () => {
     bullet.moveBy(dx*BULLET_SPEED, dy*BULLET_SPEED);
-    if (bullet.updatedCount >= 60) {
+    if (bullet.updatedCount >= UPDATE_LIMIT) {
       bullet.remove();
     } else {
+      console.log("b");
       bullet.updatedCount += 1;
+      // 各敵との当たり判定
+      for (enemy of scene.enemies) {
+        if (bullet.hitTestElement(enemy)) {
+          enemy.remove();
+          scene.enemies.delete(enemy);
+          bullet.remove();
+        }
+      }
     }
   };
 };
@@ -138,12 +154,16 @@ phina.define('MainScene', {
           this.spritePlayer.direction = key;
         }
       }
-      // 当たり判定で消える
-      if (this.spritePlayer.hitTestElement(this.spriteEnemy2)) {
-        //this.spriteEnemy.backgroundColor = "red";
-        this.spriteEnemy2.remove();
+      // 各敵との当たり判定
+      for (enemy of this.enemies) {
+        if (this.spritePlayer.hitTestElement(enemy)) {
+          enemy.remove();
+          this.enemies.delete(enemy);
+        }
       }
     };
+    // 敵の集合
+    this.enemies = new Set();
     // 敵2
     this.spriteEnemy2 = Label({
       text: "仕事",
@@ -159,6 +179,7 @@ phina.define('MainScene', {
       x: 200,
       y: 200,
     }).addChildTo(this);
+    this.enemies.add(this.spriteEnemy2);
   },
 
   update: function(app) {
