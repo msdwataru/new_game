@@ -77,7 +77,11 @@ let shootBullet = (scene, direction, initPos) => {
       console.log(scene.enemies.size);
       for (enemy of scene.enemies) {
         if (bullet.hitTestElement(enemy)) {
-          scene.updateScore(1);
+          if (enemy.id === "Enemy") {
+            scene.updateScore(100);
+          } else if (enemy.id === "Joushi") {
+            scene.updateScore(300);
+          }
           enemy.remove();
           scene.enemies.delete(enemy);
           bullet.remove();
@@ -90,11 +94,60 @@ let shootBullet = (scene, direction, initPos) => {
 // 敵クラス
 phina.define("Enemy", {
   superClass: 'Label',
+  id: "Enemy",
   init: function(scene) {
     this.superInit();
     this.text = "仕事";
     this.fill = "white";
     this.stroke = "blue";
+    this.fontFamily = "'Monaco','Consolas','MS 明朝'";
+    this.strokeWidth = 10;
+    this.shadow = "black";
+    this.shadowBlur = 100;
+    this.fontSize = 32;
+    this.x = Random.randint(0,SCREEN_WIDTH);
+    this.y = Random.randint(0,SCREEN_HEIGHT);
+    this.addChildTo(scene);
+
+    this.x = Random.randint(0,SCREEN_WIDTH);
+    this.y = Random.randint(0,SCREEN_HEIGHT);
+    this.vx = Random.randint(1, 5);
+    this.vy = Random.randint(1, 5);
+
+    this.update = () => {
+      this.x += this.vx
+      this.y += this.vy
+
+      if (this.left < 0) {
+        this.left = 0;
+        this.vx *= -1;
+      }
+      else if (this.right > SCREEN_WIDTH) {
+        this.right = SCREEN_WIDTH;
+        this.vx *= -1;
+      }
+      if (this.bottom < this.height) {
+        this.bottom = this.height;
+        this.vy *= -1;
+      }
+      else if (this.top > SCREEN_HEIGHT-this.height) {
+        this.top = SCREEN_HEIGHT-this.height;
+        this.vy *= -1;
+      }
+    }
+  },
+
+});
+
+// 有給クラス
+phina.define("Yukyu", {
+  superClass: 'Label',
+  id: "Yukyu",
+  init: function(scene) {
+    this.superInit();
+    this.text = "有給";
+    this.fill = "white";
+    this.stroke = "red";
     this.fontFamily = "'Monaco','Consolas','MS 明朝'";
     this.strokeWidth = 10;
     this.shadow = "black";
@@ -131,12 +184,12 @@ phina.define("Enemy", {
       }
     }
   },
-
 });
 
 // 敵クラス2（上司）
 phina.define("Joushi", {
   superClass: 'Sprite',
+  id: "Joushi",
   init: function(scene) {
     this.superInit("joushi");
     this.width = 50;
@@ -147,8 +200,8 @@ phina.define("Joushi", {
 
     this.x = Random.randint(0,SCREEN_WIDTH);
     this.y = Random.randint(0,SCREEN_HEIGHT);
-    this.vx = Random.randint(1, 10);
-    this.vy = Random.randint(1, 10);
+    this.vx = Random.randint(7, 10);
+    this.vy = Random.randint(7, 10);
 
     this.update = () => {
       this.x += this.vx
@@ -234,17 +287,22 @@ phina.define('MainScene', {
         if (this.spritePlayer.hitTestElement(enemy)) {
           enemy.remove();
           this.enemies.delete(enemy);
-          if (this.remainingLifeOfPlayer <= 0) {
-            // game over ...
-            let gameoverLabel = Label("あなたは解雇されました  スコア:"+this.score).addChildTo(this);
-            gameoverLabel.x = this.gridX.center(); // x 座標
-            gameoverLabel.y = this.gridY.center(); // y 座標
-            gameoverLabel.fill = 'white'; // 塗りつぶし色
-          } else {
-            this.remainingLifeOfPlayer -= 1;
+          if (enemy.id === "Yukyu") {
+            this.remainingLifeOfPlayer += 1;
             this.updateRemainingLife();
-            if (this.remainingLifeOfPlayer == UTU_THRESHOULD) {
-              this.spritePlayer.setImage('shinnjinnkunn-utu-small', PLAYER_WIDTH, PLAYER_HEIGHT);
+          } else {
+            if (this.remainingLifeOfPlayer <= 0) {
+              // game over ...
+              let gameoverLabel = Label("あなたは解雇されました  スコア:"+this.score).addChildTo(this);
+              gameoverLabel.x = this.gridX.center(); // x 座標
+              gameoverLabel.y = this.gridY.center(); // y 座標
+              gameoverLabel.fill = 'white'; // 塗りつぶし色
+            } else {
+              this.remainingLifeOfPlayer -= 1;
+              this.updateRemainingLife();
+              if (this.remainingLifeOfPlayer == UTU_THRESHOULD) {
+                this.spritePlayer.setImage('shinnjinnkunn-utu-small', PLAYER_WIDTH, PLAYER_HEIGHT);
+              }
             }
           }
         }
@@ -267,6 +325,10 @@ phina.define('MainScene', {
         enemy = Enemy(this);
       } else {
         enemy = Joushi(this);
+      }
+      if (Random.randint(1, 10) > 7 && this.countFrame >= 400) {
+        let yukyu = Yukyu(this);
+        this.enemies.add(yukyu);
       }
       
       this.enemies.add(enemy);
