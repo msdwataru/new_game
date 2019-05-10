@@ -139,6 +139,7 @@ phina.define('MainScene', {
     this.spritePlayer = Sprite('tomapiko').addChildTo(this);
     this.spritePlayer.x = this.gridX.center();
     this.spritePlayer.y = this.gridY.center();
+    this.spritePlayer.remainingLife = 3;
     this.spritePlayer.direction = KEY_LEFT;
     this.spritePlayer.update = (e) => {
       let newX = Math.round(e.pointer.x);
@@ -159,6 +160,10 @@ phina.define('MainScene', {
         if (this.spritePlayer.hitTestElement(enemy)) {
           enemy.remove();
           this.enemies.delete(enemy);
+          if (this.spritePlayer.remainingLife <= 0) {
+            // game over ...
+          }
+          this.spritePlayer.remainingLife -= 1;
         }
       }
     };
