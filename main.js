@@ -10,6 +10,57 @@ const ASSETS = {
   }
 };
 
+const KEY_NO_PUSHED = 0;
+const KEY_UP        = 1;
+const KEY_DOWN      = 2;
+const KEY_RIGHT     = 3;
+const KEY_LEFT      = 4;
+
+let getPushedKey = (keyboard) => {
+  if (keyboard.getKey("up")) { return KEY_UP; }
+  else if (keyboard.getKey("down")) { return KEY_DOWN; }
+  else if (keyboard.getKey("right")) { return KEY_RIGHT; }
+  else if (keyboard.getKey("left")) { return KEY_LEFT; }
+  return KEY_NO_PUSHED;
+};
+
+let shootBullet = (scene, direction, initPos) => {
+  const BULLET_SPEED = 16;
+  let bullet = CircleShape({
+    radius: 8,
+  }).addChildTo(scene);
+  bullet.setPosition(initPos.x, initPos.y);
+  let dx = 0, dy = 0;
+  switch (direction) {
+    case KEY_UP: {
+      dy = -1;
+      break;
+    }
+    case KEY_DOWN: {
+      dy = 1;
+      break;
+    }
+    case KEY_RIGHT: {
+      dx = 1;
+      break;
+    }
+    case KEY_LEFT: {
+      dx = -1;
+      break;
+    }
+    default: { assert("shootBullet????"); }
+  }
+  bullet.updatedCount = 0;
+  bullet.update = () => {
+    bullet.moveBy(dx*BULLET_SPEED, dy*BULLET_SPEED);
+    if (bullet.updatedCount >= 60) {
+      bullet.remove();
+    } else {
+      bullet.updatedCount += 1;
+    }
+  };
+};
+
 // MainScene クラスを定義
 phina.define('MainScene', {
   superClass: 'DisplayScene',
@@ -29,9 +80,21 @@ phina.define('MainScene', {
     this.spritePlayer = Sprite('tomapiko').addChildTo(this);
     this.spritePlayer.x = this.gridX.center();
     this.spritePlayer.y = this.gridY.center();
+    this.spritePlayer.direction = KEY_LEFT;
     this.spritePlayer.update = (e) => {
-      this.spritePlayer.x = Math.round(e.pointer.x);
-      this.spritePlayer.y = Math.round(e.pointer.y);
+      let newX = Math.round(e.pointer.x);
+      let newY = Math.round(e.pointer.y);
+      this.spritePlayer.x = newX;
+      this.spritePlayer.y = newY;
+      const key = getPushedKey(e.keyboard);
+      if (key != KEY_NO_PUSHED) {
+        shootBullet(this, getPushedKey(e.keyboard), {x:newX, y:newY});
+        if (key == KEY_LEFT  && this.spritePlayer.direction == KEY_RIGHT ||
+            key == KEY_RIGHT && this.spritePlayer.direction == KEY_LEFT) {
+          this.spritePlayer.scaleX *= -1; // 画像を反転
+          this.spritePlayer.direction = key;
+        }
+      }
     };
   },
 });
