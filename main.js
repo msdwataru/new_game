@@ -65,7 +65,17 @@ let shootBullet = (scene, direction, initPos) => {
 phina.define("Enemy", {
   init: function(scene) {
 
-    this.spriteEnemy = StarShape().addChildTo(scene);
+    //this.spriteEnemy = StarShape().addChildTo(scene);
+    this.spriteEnemy = Label({
+      text: "仕事",
+      fill: "white",
+      stroke: "blue",
+      fontFamily:"'Monaco','Consolas','MS 明朝'",
+      strokeWidth: 10,
+      shadow: "black",
+      shadowBlur: 100,
+      fontSize: 32,
+    }).addChildTo(scene);
     this.spriteEnemy.x = Random.randint(0,SCREEN_WIDTH);
     this.spriteEnemy.y = Random.randint(0,SCREEN_HEIGHT);
     this.spriteEnemy.vx = Random.randint(1, 10);
@@ -172,10 +182,10 @@ phina.define('MainScene', {
     this.time += app.deltaTime;
 
     // 一定フレームごとに敵を生成
-    this.countFrame ++;
-    if (this.countFrame % 100 == 0) {
+    if (this.countFrame % 50 == 0) {
       let enemy = Enemy(this);
     }    
+    this.countFrame ++;
   }
 });
 
