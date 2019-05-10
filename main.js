@@ -1,6 +1,8 @@
 // phina.js をグローバル領域に展開
 phina.globalize();
 
+let SHARE_MESSAGE = 'あなたは解雇されました'
+
 const SCREEN_WIDTH  = 640;
 const SCREEN_HEIGHT = 480;
 
@@ -238,6 +240,8 @@ phina.define('MainScene', {
       height: SCREEN_HEIGHT,
     });
 
+    cursorOff();
+
     const MAX_LIFE_OF_PLAYER = 3;
     const UTU_THRESHOULD = 1;
     this.remainingLifeOfPlayer = MAX_LIFE_OF_PLAYER;
@@ -292,11 +296,7 @@ phina.define('MainScene', {
             this.updateRemainingLife();
           } else {
             if (this.remainingLifeOfPlayer <= 0) {
-              // game over ...
-              let gameoverLabel = Label("あなたは解雇されました  スコア:"+this.score).addChildTo(this);
-              gameoverLabel.x = this.gridX.center(); // x 座標
-              gameoverLabel.y = this.gridY.center(); // y 座標
-              gameoverLabel.fill = 'white'; // 塗りつぶし色
+              this.gameover();
             } else {
               this.remainingLifeOfPlayer -= 1;
               this.updateRemainingLife();
@@ -336,6 +336,14 @@ phina.define('MainScene', {
     this.countFrame ++;
   },
 
+  gameover: function() {
+    cursorOn();
+    this.exit({
+      score: this.score,
+      message: SHARE_MESSAGE,
+    });
+  },
+
   updateScore: function(point) {
     this.score += point;
     this.scoreLabel.text = this.score+"";
@@ -362,9 +370,14 @@ phina.main(function() {
   });
   app.enableStats();
 
-  // マウスカーソルを非表示
-  app.interactive.cursor.normal = 'none';
-  app.interactive.cursor.hover = 'none';
+  cursorOn = function() {
+    app.interactive.cursor.normal = '';
+    app.interactive.cursor.hover = 'pointer';
+  };
+  cursorOff = function() {
+    app.interactive.cursor.normal = 'none';
+    app.interactive.cursor.hover = 'none';
+  };
 
   // アプリケーション実行
   app.run();
