@@ -69,6 +69,7 @@ let shootBullet = (scene, direction, initPos) => {
       console.log(scene.enemies.size);
       for (enemy of scene.enemies) {
         if (bullet.hitTestElement(enemy)) {
+          scene.updateScore(1);
           enemy.remove();
           scene.enemies.delete(enemy);
           bullet.remove();
@@ -134,6 +135,14 @@ phina.define('MainScene', {
       height: SCREEN_HEIGHT,
     });
 
+    this.remainingLifeOfPlayer = 3;
+
+    // 残りライフのラベル
+    this.lifeLabel = Label(this.remainingLifeOfPlayer+"").addChildTo(this);
+    this.lifeLabel.x = SCREEN_WIDTH - 30;
+    this.lifeLabel.y = this.gridY.span(1);
+    this.lifeLabel.fill = 'white';
+
     // スコアラベル
     this.scoreLabel = Label('0').addChildTo(this);
     this.scoreLabel.x = this.gridX.center();
@@ -145,12 +154,11 @@ phina.define('MainScene', {
 
     // 背景色を指定
     this.backgroundColor = '#444';
-    
+
     // プレイヤー
     this.spritePlayer = Sprite('tomapiko').addChildTo(this);
     this.spritePlayer.x = this.gridX.center();
     this.spritePlayer.y = this.gridY.center();
-    this.spritePlayer.remainingLife = 3;
     this.spritePlayer.direction = KEY_LEFT;
     this.spritePlayer.update = (e) => {
       let newX = Math.round(e.pointer.x);
@@ -171,10 +179,16 @@ phina.define('MainScene', {
         if (this.spritePlayer.hitTestElement(enemy)) {
           enemy.remove();
           this.enemies.delete(enemy);
-          if (this.spritePlayer.remainingLife <= 0) {
+          if (this.remainingLifeOfPlayer <= 0) {
             // game over ...
+            let gameoverLabel = Label("GAME OVER").addChildTo(this);
+            gameoverLabel.x = this.gridX.center(); // x 座標
+            gameoverLabel.y = this.gridY.center(); // y 座標
+            gameoverLabel.fill = 'white'; // 塗りつぶし色
+          } else {
+            this.remainingLifeOfPlayer -= 1;
+            this.lifeLabel.text = this.remainingLifeOfPlayer+"";
           }
-          this.spritePlayer.remainingLife -= 1;
         }
       }
     };
@@ -194,6 +208,11 @@ phina.define('MainScene', {
       this.enemies.add(enemy);
     }    
     this.countFrame ++;
+  },
+
+  updateScore: function(point) {
+    this.score += point;
+    this.scoreLabel.text = this.score+"";
   }
 });
 
