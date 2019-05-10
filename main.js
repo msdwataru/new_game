@@ -27,10 +27,10 @@ const KEY_RIGHT     = 3;
 const KEY_LEFT      = 4;
 
 let getPushedKey = (keyboard) => {
-  if (keyboard.getKey("up")) { return KEY_UP; }
-  else if (keyboard.getKey("down")) { return KEY_DOWN; }
-  else if (keyboard.getKey("right")) { return KEY_RIGHT; }
-  else if (keyboard.getKey("left")) { return KEY_LEFT; }
+  if (keyboard.getKey("up") || keyboard.getKey("w")) { return KEY_UP; }
+  else if (keyboard.getKey("down") || keyboard.getKey("s")) { return KEY_DOWN; }
+  else if (keyboard.getKey("right") || keyboard.getKey("d")) { return KEY_RIGHT; }
+  else if (keyboard.getKey("left") || keyboard.getKey("a")) { return KEY_LEFT; }
   return KEY_NO_PUSHED;
 };
 
@@ -194,8 +194,8 @@ phina.define("Joushi", {
   id: "Joushi",
   init: function(scene) {
     this.superInit("joushi");
-    this.width = 50;
-    this.height = 50;
+    this.width = 60;
+    this.height = 60;
     this.x = Random.randint(0,SCREEN_WIDTH);
     this.y = Random.randint(0,SCREEN_HEIGHT);
     this.addChildTo(scene);
@@ -246,6 +246,8 @@ phina.define('MainScene', {
     const UTU_THRESHOULD = 1;
     this.remainingLifeOfPlayer = MAX_LIFE_OF_PLAYER;
 
+    this.period = 40; // てきを生成する頻度を制御
+
     // 残りライフのラベル
     this.lifeLabel = Label("").addChildTo(this);
     this.lifeLabel.x = SCREEN_WIDTH - 60;
@@ -294,6 +296,10 @@ phina.define('MainScene', {
           if (enemy.id === "Yukyu") {
             this.remainingLifeOfPlayer += 1;
             this.updateRemainingLife();
+            if (this.remainingLifeOfPlayer == UTU_THRESHOULD + 1) {
+              this.spritePlayer.setImage('shinnjinnkunn-small', PLAYER_WIDTH, PLAYER_HEIGHT);
+              this.spritePlayer.scaleX *= -1; // 画像を反転
+            }
           } else {
             if (this.remainingLifeOfPlayer <= 0) {
               this.gameover();
@@ -302,6 +308,7 @@ phina.define('MainScene', {
               this.updateRemainingLife();
               if (this.remainingLifeOfPlayer == UTU_THRESHOULD) {
                 this.spritePlayer.setImage('shinnjinnkunn-utu-small', PLAYER_WIDTH, PLAYER_HEIGHT);
+                this.spritePlayer.scaleX *= -1; // 画像を反転
               }
             }
           }
@@ -319,20 +326,23 @@ phina.define('MainScene', {
     this.time += app.deltaTime;
 
     // 一定フレームごとに敵を生成
-    if (this.countFrame % 50 == 0) {
+    if (this.countFrame % this.period == 0) {
       let enemy;
-      if (Random.randint(1, 10) < 7) {
-        enemy = Enemy(this);
-      } else {
+      if (Random.randint(1, 10) >= 7 && this.countFrame >= 200) {
         enemy = Joushi(this);
+      } else {
+        enemy = Enemy(this);
       }
-      if (Random.randint(1, 10) > 7 && this.countFrame >= 400) {
+      if (Random.randint(1, 10) > 7 && this.countFrame >= 200) {
         let yukyu = Yukyu(this);
         this.enemies.add(yukyu);
       }
       
       this.enemies.add(enemy);
-    }    
+      if (this.period >= 10) {
+        this.period -= 1;
+      }
+    }
     this.countFrame ++;
   },
 
