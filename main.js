@@ -10,6 +10,24 @@ const ASSETS = {
   }
 };
 
+/*
+phina.define("Player", {
+  init: function() {
+    this.player = Sprite("tomapiko");
+    this.player.x = 0.5 * SCREEN_WIDTH;
+    this.player.y = 0.5 * SCREEN_HEIGHT;
+    this.player.update = (e) => {
+      this.player.x = Math.round(e.pointer.x);
+      this.player.y = Math.round(e.pointer.y);
+      // 当たり判定で消える
+      //if (this.spritePlayer.hitTestElement(this.spriteEnemy2)) {
+        //this.spriteEnemy.backgroundColor = "red";
+      //  this.spriteEnemy2.remove();
+      //}
+    }
+  }
+});
+*/
 // MainScene クラスを定義
 phina.define('MainScene', {
   superClass: 'DisplayScene',
@@ -37,6 +55,7 @@ phina.define('MainScene', {
         //this.spriteEnemy.backgroundColor = "red";
         this.spriteEnemy2.remove();
       }
+      
     };
     // 敵
     this.spriteEnemy = Shape({
