@@ -7,6 +7,11 @@ const SCREEN_HEIGHT = 480;
 const ASSETS = {
   image: {
     'tomapiko': 'https://rawgit.com/phi-jp/phina.js/develop/assets/images/tomapiko.png',
+    "shinnjinnkunn": "./assets/shinnjinnkunn.png",
+    "shinnjinnkunn-small": "./assets/shinnjinnkunn_small.png",
+    "shinnjinnkunn-utu-small": "./assets/shinnjinnkunn_utu_small.png",
+    "joushi": "./assets/joushi2.png",
+  
   }
 };
 
@@ -126,6 +131,48 @@ phina.define("Enemy", {
 
 });
 
+// 敵クラス2（上司）
+phina.define("Joushi", {
+  superClass: 'Sprite',
+  init: function(scene) {
+    this.superInit("joushi");
+    this.width = 50;
+    this.height = 50;
+    this.x = Random.randint(0,SCREEN_WIDTH);
+    this.y = Random.randint(0,SCREEN_HEIGHT);
+    this.addChildTo(scene);
+
+    this.x = Random.randint(0,SCREEN_WIDTH);
+    this.y = Random.randint(0,SCREEN_HEIGHT);
+    this.vx = Random.randint(1, 10);
+    this.vy = Random.randint(1, 10);
+
+    this.update = () => {
+      this.x += this.vx
+      this.y += this.vy
+
+      if (this.left < 0) {
+        this.left = 0;
+        this.vx *= -1;
+      }
+      else if (this.right > SCREEN_WIDTH) {
+        this.right = SCREEN_WIDTH;
+        this.vx *= -1;
+      }
+      if (this.bottom < this.height) {
+        this.bottom = this.height;
+        this.vy *= -1;
+      }
+      else if (this.top > SCREEN_HEIGHT-this.height) {
+        this.top = SCREEN_HEIGHT-this.height;
+        this.vy *= -1;
+      }
+    }
+  },
+
+});
+
+
 // MainScene クラスを定義
 phina.define('MainScene', {
   superClass: 'DisplayScene',
@@ -157,9 +204,11 @@ phina.define('MainScene', {
     this.backgroundColor = '#444';
 
     // プレイヤー
-    this.spritePlayer = Sprite('tomapiko').addChildTo(this);
+    this.spritePlayer = Sprite('shinnjinnkunn-utu-small').addChildTo(this);
     this.spritePlayer.x = this.gridX.center();
     this.spritePlayer.y = this.gridY.center();
+    this.spritePlayer.width = 70;
+    this.spritePlayer.height = 60;
     this.spritePlayer.direction = KEY_LEFT;
     this.spritePlayer.update = (e) => {
       let newX = Math.round(e.pointer.x);
@@ -205,7 +254,13 @@ phina.define('MainScene', {
 
     // 一定フレームごとに敵を生成
     if (this.countFrame % 50 == 0) {
-      let enemy = Enemy(this);
+      let enemy;
+      if (Random.randint(1, 10) < 7) {
+        enemy = Enemy(this);
+      } else {
+        enemy = Joushi(this);
+      }
+      
       this.enemies.add(enemy);
     }    
     this.countFrame ++;
