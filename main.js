@@ -299,6 +299,11 @@ phina.main(function() {
 //    startLabel: 'main', // メインシーンから開始する
   });
   app.enableStats();
+
+  // マウスカーソルを非表示
+  app.interactive.cursor.normal = 'none';
+  app.interactive.cursor.hover = 'none';
+
   // アプリケーション実行
   app.run();
 });
