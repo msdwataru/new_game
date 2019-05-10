@@ -130,6 +130,47 @@ phina.define("Enemy", {
 
 });
 
+// 敵クラス2（上司）
+phina.define("Joushi", {
+  superClass: 'Sprite',
+  init: function(scene) {
+    this.superInit("joushi");
+    this.width = 50;
+    this.height = 50;
+    this.x = Random.randint(0,SCREEN_WIDTH);
+    this.y = Random.randint(0,SCREEN_HEIGHT);
+    this.addChildTo(scene);
+
+    this.x = Random.randint(0,SCREEN_WIDTH);
+    this.y = Random.randint(0,SCREEN_HEIGHT);
+    this.vx = Random.randint(1, 10);
+    this.vy = Random.randint(1, 10);
+
+    this.update = () => {
+      this.x += this.vx
+      this.y += this.vy
+
+      if (this.left < 0) {
+        this.left = 0;
+        this.vx *= -1;
+      }
+      else if (this.right > SCREEN_WIDTH) {
+        this.right = SCREEN_WIDTH;
+        this.vx *= -1;
+      }
+      if (this.bottom < this.height) {
+        this.bottom = this.height;
+        this.vy *= -1;
+      }
+      else if (this.top > SCREEN_HEIGHT-this.height) {
+        this.top = SCREEN_HEIGHT-this.height;
+        this.vy *= -1;
+      }
+    }
+  },
+
+});
+
 
 // MainScene クラスを定義
 phina.define('MainScene', {
@@ -202,7 +243,12 @@ phina.define('MainScene', {
 
     // 一定フレームごとに敵を生成
     if (this.countFrame % 50 == 0) {
-      let enemy = Enemy(this);
+      let enemy;
+      if (Random.randint(1, 10) < 7) {
+        enemy = Enemy(this);
+      } else {
+        enemy = Joushi(this);
+      }
       
       this.enemies.add(enemy);
     }    
