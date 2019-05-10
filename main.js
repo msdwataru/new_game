@@ -4,6 +4,9 @@ phina.globalize();
 const SCREEN_WIDTH  = 640;
 const SCREEN_HEIGHT = 480;
 
+const PLAYER_WIDTH = 70;
+const PLAYER_HEIGHT = 60;
+
 const ASSETS = {
   image: {
     'tomapiko': 'https://rawgit.com/phi-jp/phina.js/develop/assets/images/tomapiko.png',
@@ -182,7 +185,9 @@ phina.define('MainScene', {
       height: SCREEN_HEIGHT,
     });
 
-    this.remainingLifeOfPlayer = 3;
+    const MAX_LIFE_OF_PLAYER = 3;
+    const UTU_THRESHOULD = 1;
+    this.remainingLifeOfPlayer = MAX_LIFE_OF_PLAYER;
 
     // 残りライフのラベル
     this.lifeLabel = Label("").addChildTo(this);
@@ -204,11 +209,11 @@ phina.define('MainScene', {
     this.backgroundColor = '#444';
 
     // プレイヤー
-    this.spritePlayer = Sprite('shinnjinnkunn-utu-small').addChildTo(this);
+    this.spritePlayer = Sprite('shinnjinnkunn-small').addChildTo(this);
     this.spritePlayer.x = this.gridX.center();
     this.spritePlayer.y = this.gridY.center();
-    this.spritePlayer.width = 70;
-    this.spritePlayer.height = 60;
+    this.spritePlayer.width = PLAYER_WIDTH;
+    this.spritePlayer.height = PLAYER_HEIGHT;
     this.spritePlayer.direction = KEY_LEFT;
     this.spritePlayer.update = (e) => {
       let newX = Math.round(e.pointer.x);
@@ -238,6 +243,9 @@ phina.define('MainScene', {
           } else {
             this.remainingLifeOfPlayer -= 1;
             this.updateRemainingLife();
+            if (this.remainingLifeOfPlayer == UTU_THRESHOULD) {
+              this.spritePlayer.setImage('shinnjinnkunn-utu-small', PLAYER_WIDTH, PLAYER_HEIGHT);
+            }
           }
         }
       }
