@@ -1,6 +1,8 @@
 // phina.js をグローバル領域に展開
 phina.globalize();
 
+let SHARE_MESSAGE = 'あなたは解雇されました'
+
 const SCREEN_WIDTH  = 640;
 const SCREEN_HEIGHT = 480;
 
@@ -236,10 +238,8 @@ phina.define('MainScene', {
           this.enemies.delete(enemy);
           if (this.remainingLifeOfPlayer <= 0) {
             // game over ...
-            let gameoverLabel = Label("あなたは解雇されました  スコア:"+this.score).addChildTo(this);
-            gameoverLabel.x = this.gridX.center(); // x 座標
-            gameoverLabel.y = this.gridY.center(); // y 座標
-            gameoverLabel.fill = 'white'; // 塗りつぶし色
+            this.gameover();
+
           } else {
             this.remainingLifeOfPlayer -= 1;
             this.updateRemainingLife();
@@ -272,6 +272,13 @@ phina.define('MainScene', {
       this.enemies.add(enemy);
     }    
     this.countFrame ++;
+  },
+
+  gameover: function() {
+    this.exit({
+      score: this.score,
+      message: SHARE_MESSAGE,
+    });
   },
 
   updateScore: function(point) {
