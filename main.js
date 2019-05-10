@@ -61,6 +61,40 @@ let shootBullet = (scene, direction, initPos) => {
   };
 };
 
+// 敵クラス
+phina.define("Enemy", {
+  init: function(scene) {
+
+    this.spriteEnemy = StarShape().addChildTo(scene);
+    this.spriteEnemy.x = Random.randint(0,SCREEN_WIDTH);
+    this.spriteEnemy.y = Random.randint(0,SCREEN_HEIGHT);
+    this.spriteEnemy.vx = Random.randint(1, 10);
+    this.spriteEnemy.vy = Random.randint(1, 10);
+
+    this.spriteEnemy.update = () => {
+      this.spriteEnemy.x += this.spriteEnemy.vx
+      this.spriteEnemy.y += this.spriteEnemy.vy
+
+      if (this.spriteEnemy.left < 0) {
+        this.spriteEnemy.left = 0;
+        this.spriteEnemy.vx *= -1;
+      }
+      else if (this.spriteEnemy.right > SCREEN_WIDTH) {
+        this.spriteEnemy.right = SCREEN_WIDTH;
+        this.spriteEnemy.vx *= -1;
+      }
+      if (this.spriteEnemy.bottom < this.spriteEnemy.height) {
+        this.spriteEnemy.bottom = this.spriteEnemy.height;
+        this.spriteEnemy.vy *= -1;
+      }
+      else if (this.spriteEnemy.top > SCREEN_HEIGHT-this.spriteEnemy.height) {
+        this.spriteEnemy.top = SCREEN_HEIGHT-this.spriteEnemy.height;
+        this.spriteEnemy.vy *= -1;
+      }
+    }
+  },
+
+});
 
 // MainScene クラスを定義
 phina.define('MainScene', {
@@ -77,38 +111,6 @@ phina.define('MainScene', {
     this.scoreLabel.y = this.gridY.span(1);
     this.scoreLabel.fill = 'white';
 
-    var star = StarShape().addChildTo(this);
-    star.x = Random.randint(0,SCREEN_WIDTH);
-    star.y = Random.randint(0,SCREEN_HEIGHT);
-
-    star.vx = Random.randint(1,10);
-    star.vy = Random.randint(1,10);
-
-    star.setInteractive(true);
-    star.onpointend = function() {
-      this.remove();
-    }
-    star.update = function() {
-      this.x += this.vx
-      this.y += this.vy
-
-      if (this.left < 0) {
-        this.left = 0;
-        this.vx *= -1;
-      }
-      else if (this.right > SCREEN_WIDTH) {
-        this.right = SCREEN_WIDTH;
-        this.vx *= -1;
-      }
-      if (this.bottom < this.height) {
-        this.bottom = this.height;
-        this.vy *= -1;
-      }
-      else if (this.top > SCREEN_HEIGHT-this.height) {
-        this.top = SCREEN_HEIGHT-this.height;
-        this.vy *= -1;
-      }
-    }
     this.score = 0;
     this.time = 0;
 
@@ -158,11 +160,22 @@ phina.define('MainScene', {
       //backgroundColor: "blue",
       x: 200,
       y: 200,
+
     }).addChildTo(this);
+
+    this.countFrame = 0;
+    this.numEnemy = 0;
+    
   },
 
   update: function(app) {
     this.time += app.deltaTime;
+
+    // 一定フレームごとに敵を生成
+    this.countFrame ++;
+    if (this.countFrame % 100 == 0) {
+      let enemy = Enemy(this);
+    }    
   }
 });
 
