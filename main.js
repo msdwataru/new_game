@@ -227,11 +227,15 @@ phina.define('MainScene', {
 phina.main(function() {
   // アプリケーション生成
   var app = GameApp({
+    title: 'がんばれ新人くん',
+    startLabel:location.search.substr(1).toObject().scence || 'title',
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,
     assets: ASSETS,
-    startLabel: 'main', // メインシーンから開始する
+    backgroundColor:'#444',
+//    startLabel: 'main', // メインシーンから開始する
   });
+  app.enableStats();
   // アプリケーション実行
   app.run();
 });
