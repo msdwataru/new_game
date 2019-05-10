@@ -7,6 +7,11 @@ const SCREEN_HEIGHT = 480;
 const ASSETS = {
   image: {
     'tomapiko': 'https://rawgit.com/phi-jp/phina.js/develop/assets/images/tomapiko.png',
+    "shinnjinnkunn": "./assets/shinnjinnkunn.png",
+    "shinnjinnkunn-small": "./assets/shinnjinnkunn_small.png",
+    "shinnjinnkunn-utu-small": "./assets/shinnjinnkunn_utu_small.png",
+    "joushi": "./assets/joushi2.png",
+  
   }
 };
 
@@ -125,6 +130,7 @@ phina.define("Enemy", {
 
 });
 
+
 // MainScene クラスを定義
 phina.define('MainScene', {
   superClass: 'DisplayScene',
@@ -151,9 +157,11 @@ phina.define('MainScene', {
     this.label.y = this.gridY.center(); // y 座標
     this.label.fill = 'white'; // 塗りつぶし色
     // プレイヤー
-    this.spritePlayer = Sprite('tomapiko').addChildTo(this);
+    this.spritePlayer = Sprite('shinnjinnkunn-utu-small').addChildTo(this);
     this.spritePlayer.x = this.gridX.center();
     this.spritePlayer.y = this.gridY.center();
+    this.spritePlayer.width = 70;
+    this.spritePlayer.height = 60;
     this.spritePlayer.remainingLife = 3;
     this.spritePlayer.direction = KEY_LEFT;
     this.spritePlayer.update = (e) => {
@@ -195,6 +203,7 @@ phina.define('MainScene', {
     // 一定フレームごとに敵を生成
     if (this.countFrame % 50 == 0) {
       let enemy = Enemy(this);
+      
       this.enemies.add(enemy);
     }    
     this.countFrame ++;
