@@ -70,6 +70,48 @@ phina.define('MainScene', {
       width: SCREEN_WIDTH,
       height: SCREEN_HEIGHT,
     });
+
+    // スコアラベル
+    this.scoreLabel = Label('0').addChildTo(this);
+    this.scoreLabel.x = this.gridX.center();
+    this.scoreLabel.y = this.gridY.span(1);
+    this.scoreLabel.fill = 'white';
+
+    var star = StarShape().addChildTo(this);
+    star.x = Random.randint(0,SCREEN_WIDTH);
+    star.y = Random.randint(0,SCREEN_HEIGHT);
+
+    star.vx = Random.randint(1,10);
+    star.vy = Random.randint(1,10);
+
+    star.setInteractive(true);
+    star.onpointend = function() {
+      this.remove();
+    }
+    star.update = function() {
+      this.x += this.vx
+      this.y += this.vy
+
+      if (this.left < 0) {
+        this.left = 0;
+        this.vx *= -1;
+      }
+      else if (this.right > SCREEN_WIDTH) {
+        this.right = SCREEN_WIDTH;
+        this.vx *= -1;
+      }
+      if (this.bottom < this.height) {
+        this.bottom = this.height;
+        this.vy *= -1;
+      }
+      else if (this.top > SCREEN_HEIGHT-this.height) {
+        this.top = SCREEN_HEIGHT-this.height;
+        this.vy *= -1;
+      }
+    }
+    this.score = 0;
+    this.time = 0;
+
     // 背景色を指定
     this.backgroundColor = '#444';
     // ラベルを生成
@@ -77,7 +119,7 @@ phina.define('MainScene', {
     this.label.x = this.gridX.center(); // x 座標
     this.label.y = this.gridY.center(); // y 座標
     this.label.fill = 'white'; // 塗りつぶし色
-    // キャラクタ
+    // プレイヤー
     this.spritePlayer = Sprite('tomapiko').addChildTo(this);
     this.spritePlayer.x = this.gridX.center();
     this.spritePlayer.y = this.gridY.center();
@@ -116,9 +158,15 @@ phina.define('MainScene', {
       //backgroundColor: "blue",
       x: 200,
       y: 200,
-    }).addChildTo(this)
+    }).addChildTo(this);
   },
+
+  update: function(app) {
+    this.time += app.deltaTime;
+  }
 });
+
+
 
 // メイン処理
 phina.main(function() {
