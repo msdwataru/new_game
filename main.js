@@ -145,11 +145,7 @@ phina.define('MainScene', {
 
     // 背景色を指定
     this.backgroundColor = '#444';
-    // ラベルを生成
-    this.label = Label('Hello, phina.js!').addChildTo(this);
-    this.label.x = this.gridX.center(); // x 座標
-    this.label.y = this.gridY.center(); // y 座標
-    this.label.fill = 'white'; // 塗りつぶし色
+    
     // プレイヤー
     this.spritePlayer = Sprite('tomapiko').addChildTo(this);
     this.spritePlayer.x = this.gridX.center();
@@ -207,11 +203,15 @@ phina.define('MainScene', {
 phina.main(function() {
   // アプリケーション生成
   var app = GameApp({
+    title: 'がんばれ新人くん',
+    startLabel:location.search.substr(1).toObject().scence || 'title',
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,
     assets: ASSETS,
-    startLabel: 'main', // メインシーンから開始する
+    backgroundColor:'#444',
+//    startLabel: 'main', // メインシーンから開始する
   });
+  app.enableStats();
   // アプリケーション実行
   app.run();
 });
