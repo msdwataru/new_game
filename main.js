@@ -32,7 +32,35 @@ phina.define('MainScene', {
     this.spritePlayer.update = (e) => {
       this.spritePlayer.x = Math.round(e.pointer.x);
       this.spritePlayer.y = Math.round(e.pointer.y);
+      // 当たり判定で消える
+      if (this.spritePlayer.hitTestElement(this.spriteEnemy2)) {
+        //this.spriteEnemy.backgroundColor = "red";
+        this.spriteEnemy2.remove();
+      }
     };
+    // 敵
+    this.spriteEnemy = Shape({
+      backgroundColor: "blue",
+      x: 100,
+      y: 100,
+      width: 30,
+      height: 30,
+    }).addChildTo(this)
+    // 敵2
+    this.spriteEnemy2 = Label({
+      text: "仕事",
+      fill: "white",
+      stroke: "blue",
+      fontFamily:"'Monaco','Consolas','MS 明朝'",
+      strokeWidth: 10,
+      shadow: "black",
+      shadowBlur: 100,
+      fontSize: 32,
+
+      //backgroundColor: "blue",
+      x: 200,
+      y: 200,
+    }).addChildTo(this)
   },
 });
 
