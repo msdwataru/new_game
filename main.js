@@ -66,6 +66,7 @@ let shootBullet = (scene, direction, initPos) => {
       console.log("b");
       bullet.updatedCount += 1;
       // 各敵との当たり判定
+      console.log(scene.enemies.size);
       for (enemy of scene.enemies) {
         if (bullet.hitTestElement(enemy)) {
           enemy.remove();
@@ -77,34 +78,29 @@ let shootBullet = (scene, direction, initPos) => {
   };
 };
 
+// 敵クラス
+phina.define("Enemy", {
+  superClass: 'Label',
+  init: function(scene) {
+    this.superInit();
+    this.text = "仕事";
+    this.fill = "white";
+    this.stroke = "blue";
+    this.fontFamily = "'Monaco','Consolas','MS 明朝'";
+    this.strokeWidth = 10;
+    this.shadow = "black";
+    this.shadowBlur = 100;
+    this.fontSize = 32;
+    this.x = Random.randint(0,SCREEN_WIDTH);
+    this.y = Random.randint(0,SCREEN_HEIGHT);
+    this.addChildTo(scene);
 
-// MainScene クラスを定義
-phina.define('MainScene', {
-  superClass: 'DisplayScene',
-  init: function() {
-    this.superInit({
-      width: SCREEN_WIDTH,
-      height: SCREEN_HEIGHT,
-    });
+    this.x = Random.randint(0,SCREEN_WIDTH);
+    this.y = Random.randint(0,SCREEN_HEIGHT);
+    this.vx = Random.randint(1, 10);
+    this.vy = Random.randint(1, 10);
 
-    // スコアラベル
-    this.scoreLabel = Label('0').addChildTo(this);
-    this.scoreLabel.x = this.gridX.center();
-    this.scoreLabel.y = this.gridY.span(1);
-    this.scoreLabel.fill = 'white';
-
-    var star = StarShape().addChildTo(this);
-    star.x = Random.randint(0,SCREEN_WIDTH);
-    star.y = Random.randint(0,SCREEN_HEIGHT);
-
-    star.vx = Random.randint(1,10);
-    star.vy = Random.randint(1,10);
-
-    star.setInteractive(true);
-    star.onpointend = function() {
-      this.remove();
-    }
-    star.update = function() {
+    this.update = () => {
       this.x += this.vx
       this.y += this.vy
 
@@ -125,6 +121,25 @@ phina.define('MainScene', {
         this.vy *= -1;
       }
     }
+  },
+
+});
+
+// MainScene クラスを定義
+phina.define('MainScene', {
+  superClass: 'DisplayScene',
+  init: function() {
+    this.superInit({
+      width: SCREEN_WIDTH,
+      height: SCREEN_HEIGHT,
+    });
+
+    // スコアラベル
+    this.scoreLabel = Label('0').addChildTo(this);
+    this.scoreLabel.x = this.gridX.center();
+    this.scoreLabel.y = this.gridY.span(1);
+    this.scoreLabel.fill = 'white';
+
     this.score = 0;
     this.time = 0;
 
@@ -169,26 +184,20 @@ phina.define('MainScene', {
     };
     // 敵の集合
     this.enemies = new Set();
-    // 敵2
-    this.spriteEnemy2 = Label({
-      text: "仕事",
-      fill: "white",
-      stroke: "blue",
-      fontFamily:"'Monaco','Consolas','MS 明朝'",
-      strokeWidth: 10,
-      shadow: "black",
-      shadowBlur: 100,
-      fontSize: 32,
 
-      //backgroundColor: "blue",
-      x: 200,
-      y: 200,
-    }).addChildTo(this);
-    this.enemies.add(this.spriteEnemy2);
+    this.countFrame = 0;
+    this.numEnemy = 0;
   },
 
   update: function(app) {
     this.time += app.deltaTime;
+
+    // 一定フレームごとに敵を生成
+    if (this.countFrame % 50 == 0) {
+      let enemy = Enemy(this);
+      this.enemies.add(enemy);
+    }    
+    this.countFrame ++;
   }
 });
 
