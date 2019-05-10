@@ -138,10 +138,11 @@ phina.define('MainScene', {
     this.remainingLifeOfPlayer = 3;
 
     // 残りライフのラベル
-    this.lifeLabel = Label(this.remainingLifeOfPlayer+"").addChildTo(this);
-    this.lifeLabel.x = SCREEN_WIDTH - 30;
+    this.lifeLabel = Label("").addChildTo(this);
+    this.lifeLabel.x = SCREEN_WIDTH - 60;
     this.lifeLabel.y = this.gridY.span(1);
     this.lifeLabel.fill = 'white';
+    this.updateRemainingLife();
 
     // スコアラベル
     this.scoreLabel = Label('0').addChildTo(this);
@@ -181,13 +182,13 @@ phina.define('MainScene', {
           this.enemies.delete(enemy);
           if (this.remainingLifeOfPlayer <= 0) {
             // game over ...
-            let gameoverLabel = Label("GAME OVER").addChildTo(this);
+            let gameoverLabel = Label("あなたは解雇されました  スコア:"+this.score).addChildTo(this);
             gameoverLabel.x = this.gridX.center(); // x 座標
             gameoverLabel.y = this.gridY.center(); // y 座標
             gameoverLabel.fill = 'white'; // 塗りつぶし色
           } else {
             this.remainingLifeOfPlayer -= 1;
-            this.lifeLabel.text = this.remainingLifeOfPlayer+"";
+            this.updateRemainingLife();
           }
         }
       }
@@ -213,6 +214,10 @@ phina.define('MainScene', {
   updateScore: function(point) {
     this.score += point;
     this.scoreLabel.text = this.score+"";
+  },
+
+  updateRemainingLife: function() {
+    this.lifeLabel.text = "残機:"+this.remainingLifeOfPlayer;
   }
 });
 
