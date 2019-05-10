@@ -61,6 +61,7 @@ let shootBullet = (scene, direction, initPos) => {
   };
 };
 
+
 // MainScene クラスを定義
 phina.define('MainScene', {
   superClass: 'DisplayScene',
@@ -95,7 +96,27 @@ phina.define('MainScene', {
           this.spritePlayer.direction = key;
         }
       }
+      // 当たり判定で消える
+      if (this.spritePlayer.hitTestElement(this.spriteEnemy2)) {
+        //this.spriteEnemy.backgroundColor = "red";
+        this.spriteEnemy2.remove();
+      }
     };
+    // 敵2
+    this.spriteEnemy2 = Label({
+      text: "仕事",
+      fill: "white",
+      stroke: "blue",
+      fontFamily:"'Monaco','Consolas','MS 明朝'",
+      strokeWidth: 10,
+      shadow: "black",
+      shadowBlur: 100,
+      fontSize: 32,
+
+      //backgroundColor: "blue",
+      x: 200,
+      y: 200,
+    }).addChildTo(this)
   },
 });
 
